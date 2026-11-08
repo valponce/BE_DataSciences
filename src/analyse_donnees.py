@@ -33,6 +33,9 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.svm import LinearSVC
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 
+from joblib import Memory
+CACHE = Memory("cache", verbose=0)
+
 warnings.filterwarnings("ignore", category=ConvergenceWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -595,7 +598,7 @@ def tracer_courbe_validation(pipeline, X, y, nom_parametre, valeurs, titre, eche
 # 4. MODÈLES DE CLASSIFICATION
 
 
-def construire_preparation(min_df=2, ngram_enchainements=(1, 3)):
+def construire_preparation(min_df=2, ngram_enchainements=(1, 2)):
     """Transforme le tableau des sessions en une matrice numérique :
     - TF-IDF des jetons d'action complets (type + écran + configuration + chaîne) ;
     - TF-IDF des enchaînements de types d'action (n-grammes = actions consécutives) ;
@@ -608,7 +611,7 @@ def construire_preparation(min_df=2, ngram_enchainements=(1, 3)):
     return ColumnTransformer([
         ("actions", tfidf(min_df=min_df), "doc_actions"),
         ("enchainements", tfidf(min_df=min_df, ngram_range=ngram_enchainements), "doc_types"),
-        ("composants", tfidf(min_df=1), "doc_composants"),
+        ("composants", tfidf(min_df=2), "doc_composants"),
         ("navigateur", OneHotEncoder(handle_unknown="ignore"), ["navigateur"]),
         ("statistiques", StandardScaler(), COLONNES_NUMERIQUES),
     ])
@@ -620,8 +623,8 @@ def creer_modeles():
         "Référence (utilisateur le plus fréquent)": DummyClassifier(strategy="most_frequent"),
         "Régression logistique": LogisticRegression(C=10, max_iter=2000),
         "SVM linéaire": LinearSVC(C=1, max_iter=5000),
-        "Perceptron multicouche (MLP)": MLPClassifier(hidden_layer_sizes=(256,), max_iter=100,
-                                                      random_state=GRAINE),
+        "Perceptron multicouche (MLP)": MLPClassifier(hidden_layer_sizes=(128,), max_iter=40, tol=1e-3,
+                                              n_iter_no_change=5, random_state=GRAINE),
         "Arbre de décision": DecisionTreeClassifier(random_state=GRAINE),
         "Forêt aléatoire": RandomForestClassifier(n_estimators=300, n_jobs=-1, random_state=GRAINE),
     }
@@ -630,9 +633,9 @@ def creer_modeles():
 def creer_pipeline(modele, **options_preparation):
     """Enchaîne la préparation des variables et le modèle. La préparation (vocabulaire du TF-IDF,
     moyennes du StandardScaler) est apprise uniquement sur les données d'apprentissage."""
-    return Pipeline([("preparation", construire_preparation(**options_preparation)), ("modele", modele)])
-
-
+    return Pipeline([("preparation", construire_preparation(**options_preparation)),
+                 ("modele", modele)], memory=CACHE)
+  
 def decouper_apprentissage_validation(table, part_validation=0.25):
     """Découpage stratifié : chaque utilisateur garde la même proportion de sessions dans les deux parties.
     Un utilisateur qui n'a qu'une seule session est placé en apprentissage."""
@@ -717,7 +720,7 @@ GRILLE_PREPARATION = {
 
 def optimiser_modele(pipeline, grille, app, plis=3):
     """Recherche sur grille en validation croisée, uniquement sur la partie apprentissage."""
-    recherche = GridSearchCV(pipeline, grille, scoring=METRIQUE, n_jobs=-1, refit=True,
+    recherche = GridSearchCV(pipeline, grille, scoring=METRIQUE, n_jobs=3, refit=True,
                              cv=StratifiedKFold(plis, shuffle=True, random_state=GRAINE))
     recherche.fit(app, app["util"])
     return recherche
