@@ -11,10 +11,13 @@
 
 <br/>
 <!-- à partir du Shields.io c un service gratuit et c joli -->
-![Python](https://img.shields.io/badge/python-3.14-blue.svg)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-orange.svg)
-![pandas](https://img.shields.io/badge/pandas-150458.svg)
-![Jupyter](https://img.shields.io/badge/jupyter-notebook-orange.svg)
+
+![Python](https://img.shields.io/badge/Python-3.14-C8102E?style=flat-square&logo=python&logoColor=white&labelColor=1D1D1B)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-C8102E?style=flat-square&logo=scikitlearn&logoColor=white&labelColor=1D1D1B)
+![pandas](https://img.shields.io/badge/pandas-données-C8102E?style=flat-square&logo=pandas&logoColor=white&labelColor=1D1D1B)
+![Kaggle](https://img.shields.io/badge/Kaggle-Groupe%204-C8102E?style=flat-square&logo=kaggle&logoColor=white&labelColor=1D1D1B)
+![F1](https://img.shields.io/badge/F1%20validation-0.957-C8102E?style=flat-square&labelColor=1D1D1B)
+![CV](https://img.shields.io/badge/F1%20validation%20crois%C3%A9e-0.970%20%C2%B1%200.003-C8102E?style=flat-square&labelColor=1D1D1B)
 
 </div>
 
