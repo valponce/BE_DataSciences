@@ -214,6 +214,52 @@ session qui ne ressemble à aucun profil connu.
 
 ---
 
+## Bibliographie
+
+Voici les pages que nous avons consultées:
+
+### 1. Préparation et nettoyage des données
+- [pandas read csv rows with variable number of columns](https://stackoverflow.com/questions/31053022/pandas-read-csv-rows-with-variable-number-of-columns) (Stack Overflow) : lire un fichier dont les lignes n'ont pas le même nombre de colonnes.
+- [Handling variable number of columns with pandas - Python](https://stackoverflow.com/questions/15242746/handling-variable-number-of-columns-with-pandas-python) (Stack Overflow) : même problème, avec la solution des noms de colonnes fixés à l'avance.
+- [Python RegEx](https://www.geeksforgeeks.org/python/python-regex/) (GeeksforGeeks) : expressions régulières pour découper les jetons.
+- [re.MatchObject.group() function in Python Regex](https://www.geeksforgeeks.org/python/re-matchobject-group-function-in-python-regex/) (GeeksforGeeks) : récupérer les groupes (écran, configuration, chaîne) d'une action.
+- [Interquartile Range to Detect Outliers in Data](https://www.geeksforgeeks.org/interquartile-range-to-detect-outliers-in-data/) (GeeksforGeeks) : règle de l'IQR pour repérer les valeurs aberrantes.
+- [Detect and Remove the Outliers using Python](https://www.geeksforgeeks.org/data-science/detect-and-remove-the-outliers-using-python/) (GeeksforGeeks) : retirer les sessions aberrantes.
+- [Log Transformation](https://www.geeksforgeeks.org/data-science/log-transformation/) (GeeksforGeeks) : passage au logarithme des durées et du nombre d'actions.
+
+### 2. Exploration et visualisation
+- [Chi-Square Test for Feature Selection – Mathematical Explanation](https://www.geeksforgeeks.org/chi-square-test-for-feature-selection-mathematical-explanation/) (GeeksforGeeks) : test du χ² entre les actions et l'utilisateur.
+- [How to create a seaborn correlation heatmap in Python?](https://www.geeksforgeeks.org/how-to-create-a-seaborn-correlation-heatmap-in-python/) (GeeksforGeeks) : matrices de corrélation et de transition.
+- [How to Calculate Cosine Similarity in Python?](https://www.geeksforgeeks.org/how-to-calculate-cosine-similarity-in-python/) (GeeksforGeeks) : similarité entre les profils d'utilisateurs.
+
+### 3. Représentation des sessions (TF-IDF et variables)
+- [Understanding TF-IDF (Term Frequency-Inverse Document Frequency)](https://www.geeksforgeeks.org/machine-learning/understanding-tf-idf-term-frequency-inverse-document-frequency/) (GeeksforGeeks) : principe du TF-IDF.
+- [N-gram in NLP](https://www.geeksforgeeks.org/nlp/n-gram-in-nlp/) (GeeksforGeeks) : suites d'actions consécutives (n-grammes).
+- [One Hot Encoding in Machine Learning](https://www.geeksforgeeks.org/machine-learning/ml-one-hot-encoding/) (GeeksforGeeks) : codage du navigateur.
+- [Prediction using ColumnTransformer, OneHotEncoder and Pipeline](https://www.geeksforgeeks.org/prediction-using-columntransformer-onehotencoder-and-pipeline/) (GeeksforGeeks) : regrouper toutes les transformations dans un `Pipeline`.
+
+### 4. Évaluation
+- [Parameter "stratify" from method "train_test_split" (scikit Learn)](https://stackoverflow.com/questions/34842405/parameter-stratify-from-method-train-test-split-scikit-learn) (Stack Overflow) : découpage stratifié apprentissage / validation.
+- [Stratified K Fold Cross Validation](https://www.geeksforgeeks.org/machine-learning/stratified-k-fold-cross-validation/) (GeeksforGeeks) : validation croisée stratifiée.
+- [Macro VS Micro VS Weighted VS Samples F1 Score](https://stackoverflow.com/questions/55740220/macro-vs-micro-vs-weighted-vs-samples-f1-score) (Stack Overflow) : différence entre F1 micro, macro et pondéré.
+- [Computing macro f1 score using sklearn](https://stackoverflow.com/questions/43421456/computing-macro-f1-score-using-sklearn) (Stack Overflow) : calcul du F1 macro avec scikit-learn.
+- [Understanding the Confusion Matrix in Machine Learning](https://www.geeksforgeeks.org/confusion-matrix-machine-learning/) (GeeksforGeeks) : lecture de la matrice de confusion.
+
+### 5. Modèles de classification
+- [Logistic Regression in Machine Learning](https://www.geeksforgeeks.org/machine-learning/understanding-logistic-regression/) (GeeksforGeeks) : régression logistique.
+- [Support Vector Machine (SVM) Algorithm](https://www.geeksforgeeks.org/machine-learning/support-vector-machine-algorithm/) (GeeksforGeeks) : SVM et notion de marge.
+- [Multi-layer Perceptron a Supervised Neural Network Model using Sklearn](https://www.geeksforgeeks.org/deep-learning/multi-layer-perceptron-a-supervised-neural-network-model-using-sklearn/) (GeeksforGeeks) : perceptron multicouche avec `MLPClassifier`.
+- [Overfitting in Decision Tree Models](https://www.geeksforgeeks.org/overfitting-in-decision-tree-models/) (GeeksforGeeks) : sur-apprentissage de l'arbre de décision.
+- [Random Forest Classifier using Scikit-learn](https://www.geeksforgeeks.org/random-forest-classifier-using-scikit-learn/) (GeeksforGeeks) : forêt aléatoire.
+- [Feature Importance with Random Forests](https://www.geeksforgeeks.org/machine-learning/feature-importance-with-random-forests/) (GeeksforGeeks) : importance des variables.
+
+### 6. Optimisation
+- [Hyperparameter Tuning](https://www.geeksforgeeks.org/machine-learning/hyperparameter-tuning/) (GeeksforGeeks) : principe du réglage des hyperparamètres.
+- [SVM Hyperparameter Tuning using GridSearchCV](https://www.geeksforgeeks.org/machine-learning/svm-hyperparameter-tuning-using-gridsearchcv-ml/) (GeeksforGeeks) : recherche sur grille avec `GridSearchCV`.
+- [Validation Curve](https://www.geeksforgeeks.org/machine-learning/validation-curve/) (GeeksforGeeks) : courbe de validation du paramètre `C`.
+
+---
+
 ## Installation et exécution
 
 ```bash
