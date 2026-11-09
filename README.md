@@ -238,6 +238,7 @@ Voici les pages que nous avons consultées:
 - [N-gram in NLP](https://www.geeksforgeeks.org/nlp/n-gram-in-nlp/) (GeeksforGeeks) : suites d'actions consécutives (n-grammes).
 - [One Hot Encoding in Machine Learning](https://www.geeksforgeeks.org/machine-learning/ml-one-hot-encoding/) (GeeksforGeeks) : codage du navigateur.
 - [Prediction using ColumnTransformer, OneHotEncoder and Pipeline](https://www.geeksforgeeks.org/prediction-using-columntransformer-onehotencoder-and-pipeline/) (GeeksforGeeks) : regrouper toutes les transformations dans un `Pipeline`.
+- [Extraction de variables à partir de texte, guide scikit-learn](https://scikit-learn.org/stable/modules/feature_extraction.html#text-feature-extraction) : principe du sac de mots et du TF-IDF, avec exemples.
 
 ### 4. Évaluation
 - [Parameter "stratify" from method "train_test_split" (scikit Learn)](https://stackoverflow.com/questions/34842405/parameter-stratify-from-method-train-test-split-scikit-learn) (Stack Overflow) : découpage stratifié apprentissage / validation.
