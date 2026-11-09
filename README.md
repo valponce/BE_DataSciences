@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/%C3%89COLE%20CENTRALE-LYON-C8102E?style=for-the-badge&labelColor=1D1D1B" alt="École Centrale de Lyon"/>
+<img src="je vais lajouter sur SRC" alt="École Centrale de Lyon" width="340"/>
 
 # Qui utilise mon appli ?
 ### Identification des utilisateurs du logiciel Copilote à partir de leurs traces d'utilisation
@@ -19,15 +19,6 @@
 ![CV](https://img.shields.io/badge/F1%20validation%20crois%C3%A9e-0.970%20%C2%B1%200.003-C8102E?style=flat-square&labelColor=1D1D1B)
 
 </div>
-
----
-
-## En bref
-
-> À partir de la seule trace de ses actions dans Copilote, notre modèle retrouve l'utilisateur de **95,7 %** des
-> sessions de validation, parmi **247 personnes**. Le meilleur modèle est un **SVM linéaire** appliqué à une
-> représentation **TF-IDF** des actions, de leurs enchaînements et des écrans utilisés, complétée par le navigateur
-> et le rythme de travail.
 
 ---
 
@@ -73,6 +64,7 @@ sph,Firefox,Exécution d'un bouton(fr.infologic...CopiloteWebSharedController)<D
 ```
 BE_DataSciences/
 ├── Data/                     # train.csv, test.csv, sample_submission.csv (non versionnés)
+├── assets/                   # logo et schéma de la démarche
 ├── src/
 │   ├── analyse_donnees.py    # point d'entrée : regroupe les 5 fichiers ci-dessous
 │   ├── configuration.py      # 1. constantes, style des graphiques, recherche des données
@@ -85,7 +77,7 @@ BE_DataSciences/
 └── README.md
 ```
 
-Le code est réparti en un fichier par étape. Le notebook n'a qu'un seul import à faire,
+Nous avons réparti le code en un fichier par étape. Le notebook n'a qu'un seul import à faire,
 `import analyse_donnees as AN`, qui donne accès à toutes les fonctions :
 
 | Fichier | Étape | Fonctions principales |
@@ -100,36 +92,51 @@ Le code est réparti en un fichier par étape. Le notebook n'a qu'un seul import
 
 ## Démarche
 
-```mermaid
-flowchart LR
-    A[train.csv<br/>test.csv] --> B[Lecture<br/>ligne par ligne]
-    B --> C[Contrôle qualité<br/>1 session vide retirée]
-    C --> D[Exploration<br/>χ², transitions, similarités]
-    D --> E[5 593 variables<br/>TF-IDF + navigateur + rythme]
-    E --> F[5 modèles<br/>+ référence]
-    F --> G[Optimisation<br/>GridSearchCV]
-    G --> H[SVM linéaire<br/>submission.csv]
-```
+<div align="center">
+<img src="sera aussi sur src " alt="Schéma de la démarche" width="900"/>
+</div>
 
 ### 1. Préparation et nettoyage
-- **3 279 sessions** (247 utilisateurs) dans le train, **324** dans le test. Les lignes vont de 14 à **14 470 champs** :
-  lecture **ligne par ligne**, puis découpage de chaque jeton en type d'action, écran, configuration, chaîne et modification.
-- Contrôle qualité : aucune ligne vide, aucun doublon, aucune trace partagée entre deux utilisateurs ;
-  **1 session sans action** retirée, **9 jetons** hors format sur 2,27 millions (conservés).
-- Durées très asymétriques (jusqu'à 11 790 s) : pas de suppression, mais passage au **logarithme**, qui donne une
-  distribution presque en cloche.
+- Nous avons d'abord constaté que les lignes vont de 14 à **14 470 champs** : un `read_csv` classique ne suffisait
+  pas, nous avons donc lu les **3 279 sessions** du train (247 utilisateurs) et les **324** du test **ligne par ligne**.
+- Nous avons découpé chaque jeton en type d'action, écran, configuration, chaîne et indicateur de modification,
+  puis calculé quelques indicateurs par session (nombre d'actions, durée, cadence, entropie, nombre d'écrans).
+- Nous avons vérifié la qualité des données : aucune ligne vide, aucun doublon, aucune trace partagée entre deux
+  utilisateurs. Nous avons retiré **1 session sans action** et gardé les **9 jetons** hors format, négligeables
+  sur 2,27 millions.
+- Nous avons vu que les durées étaient très asymétriques (jusqu'à 11 790 s). Comme ce sont de vraies sessions, nous
+  ne les avons pas supprimées : nous les avons passées au **logarithme**, ce qui donne une distribution presque en cloche.
 
 ### 2. Exploration : ce qui distingue les utilisateurs
-| Constat | Chiffres clés |
+| Ce que nous avons constaté | Chiffres clés |
 | --- | --- |
-| Classes déséquilibrées | 4 à 75 sessions par utilisateur, médiane 12 |
-| Un utilisateur = un seul navigateur | Firefox 44,7 %, Chrome 40,8 %, Edge 13,8 %, Opera 0,7 % (1 seul utilisateur) |
+| Les classes sont déséquilibrées | 4 à 75 sessions par utilisateur, médiane 12 |
+| Chaque utilisateur garde un seul navigateur | Firefox 44,7 %, Chrome 40,8 %, Edge 13,8 %, Opera 0,7 % (1 seul utilisateur) |
 | Les actions courantes sont communes à tous | « Exécution d'un bouton » = 22,5 % des 2,27 M d'actions, utilisée par les 247 |
 | Les actions rares sont discriminantes (χ²) | formulaires, flags, tableaux de bord, raccourcis : χ² ≈ 230 à 320 ; 14 types retenus |
-| Les écrans et chaînes le sont encore plus | 76 chaînes, 219 configurations ; χ² jusqu'à ≈ 1 300 (chaînes MOBI, TRACE…) ; 39 composants retenus |
+| Les écrans et les chaînes le sont encore plus | 76 chaînes, 219 configurations ; χ² jusqu'à ≈ 1 300 (chaînes MOBI, TRACE…) ; 39 composants retenus |
 | Les profils sont distincts | similarité cosinus médiane 0,25 ; quelques collègues très proches (ptb / txk / sdx ≈ 0,9) |
 
-### 3. Variables (5 593 par session)
+### 3. Pourquoi nous avons choisi le TF-IDF
+En regardant les traces, nous avons constaté qu'une session ressemble beaucoup à un **texte** : c'est une suite de
+« mots » (les actions, les écrans, les chaînes) dont certains reviennent dans toutes les sessions et d'autres sont
+propres à quelques personnes. Notre problème devenait donc proche d'un problème de **traitement de texte** :
+reconnaître l'auteur d'un document à partir des mots qu'il utilise.
+
+Nous nous sommes donc servis de la méthode vue en cours pour les textes, le **TF-IDF**, et nous avons essayé de
+l'appliquer à nos traces :
+- le **TF** (fréquence du terme) donne du poids à une action que l'utilisateur fait souvent dans la session ;
+- l'**IDF** (fréquence inverse dans les documents) diminue le poids des actions que tout le monde fait, comme
+  « Exécution d'un bouton », et augmente celui des actions rares, qui caractérisent une personne.
+
+C'est exactement ce que l'exploration nous avait montré : les actions les plus fréquentes sont les moins utiles,
+les actions et les écrans rares sont les plus discriminants. Nous avons aussi utilisé deux réglages adaptés à nos
+données : la pondération **sous-linéaire** (1 + log tf), pour qu'une action répétée des centaines de fois ne domine
+pas, et la **normalisation** de chaque vecteur, pour qu'une session courte et une session longue d'un même
+utilisateur restent comparables. Enfin, comme pour les textes, nous avons pris en compte l'ordre des actions avec
+des **n-grammes** (suites de 2 ou 3 actions consécutives).
+
+### 4. Variables (5 593 par session)
 | Groupe | Construction | Nombre |
 | --- | --- | :---: |
 | `actions` | TF-IDF des jetons complets (type + écran + configuration + chaîne) | 4 111 |
@@ -138,12 +145,21 @@ flowchart LR
 | `statistiques` | log(nb actions), log(durée), cadence, nb de types, part d'actions distinctes, entropie, nb d'écrans | 7 |
 | `navigateur` | one-hot | 4 |
 
-Toute la préparation est incluse dans un `Pipeline` scikit-learn : le TF-IDF et le `StandardScaler` sont appris
-**uniquement** sur les données d'apprentissage.
+Nous avons mis toute la préparation dans un `Pipeline` scikit-learn : le TF-IDF et le `StandardScaler` sont appris
+**uniquement** sur les données d'apprentissage, jamais sur la validation ni sur le test.
 
-### 4. Évaluation
-Découpage **stratifié** 75 % / 25 % du train (2 458 / 820 sessions), puis **validation croisée** stratifiée.
-`test.csv` n'est utilisé qu'à la toute fin, pour la soumission.
+### 5. Évaluation
+Nous avons découpé le train de façon **stratifiée** : 75 % pour apprendre et 25 % pour valider (2 458 / 820 sessions),
+puis nous avons vérifié le meilleur modèle en **validation croisée** stratifiée. Nous n'avons utilisé `test.csv`
+qu'à la toute fin, pour la soumission.
+
+### 6. Modèles comparés et optimisation
+Nous avons comparé cinq méthodes vues en cours, la **régression logistique**, le **SVM linéaire**, le
+**perceptron multicouche (MLP)**, l'**arbre de décision** et la **forêt aléatoire**, à une référence qui prédit
+toujours l'utilisateur le plus fréquent. Nous les avons ensuite optimisées avec `GridSearchCV`, en validation croisée
+à 3 plis sur la seule partie apprentissage : régularisation `C`, pondération des classes, taille du MLP, profondeur
+des arbres et nombre d'arbres. Enfin, nous avons réglé la préparation (`min_df`, longueur des n-grammes) sur le
+meilleur modèle.
 
 ---
 
@@ -160,23 +176,24 @@ Découpage **stratifié** 75 % / 25 % du train (2 458 / 820 sessions), puis **va
 | Arbre de décision | 0,759 | 0,700 | 0,780 | `class_weight = "balanced"` |
 | Référence (classe majoritaire) | 0,023 | 0,000 | — | — |
 
-- Le **SVM linéaire** est le meilleur et le plus rapide (6 s), avec un F1 macro presque égal au micro : il reconnaît
-  aussi bien les petits utilisateurs que les gros.
-- **Validation croisée à 5 plis** du SVM sur tout le train : **F1 = 0,970 ± 0,003**, un score très stable.
-- Tous les modèles atteignent 1,000 sur l'apprentissage ; l'**arbre de décision** sur-apprend fortement
-  (écart de 0,24 avec la validation), ce que la forêt aléatoire corrige en grande partie.
-- L'optimisation apporte peu (au plus +0,02) : la représentation des sessions compte plus que les paramètres.
+- Le **SVM linéaire** est notre meilleur modèle, et le plus rapide (6 s). Son F1 macro est presque égal au micro :
+  il reconnaît aussi bien les petits utilisateurs que les gros.
+- En **validation croisée à 5 plis** sur tout le train, il obtient **F1 = 0,970 ± 0,003** : le score est très stable.
+- Tous les modèles atteignent 1,000 sur l'apprentissage ; nous avons vu que l'**arbre de décision** sur-apprend
+  fortement (écart de 0,24 avec la validation), ce que la forêt aléatoire corrige en grande partie.
+- L'optimisation nous a apporté peu (au plus +0,02) : la représentation des sessions compte plus que les paramètres.
 
 ### Modèle final
-**SVM linéaire**, `C = 1`, tous les jetons (`min_df = 1`) et enchaînements de 1 à 3 actions :
-F1 = 0,948 ± 0,006 en validation croisée et **0,956** en validation, puis réentraîné sur tout le train.
+Nous avons retenu le **SVM linéaire**, `C = 1`, avec tous les jetons (`min_df = 1`) et des enchaînements de 1 à
+3 actions : F1 = 0,948 ± 0,006 en validation croisée et **0,956** en validation. Nous l'avons ensuite réentraîné sur
+tout le train.
 
 ### Analyse
 - **Variables les plus utiles** (forêt aléatoire) : le navigateur, la configuration `INSTALLATEUR`, l'entropie de
   la session, la paire « Saisie → Bouton », les actions « Raccourci », « Chainage », « Double-clic » et la cadence.
-- **Erreurs** : sur les 15 utilisateurs les plus présents, 6 erreurs sur 151 sessions, surtout vers **skm**,
-  l'utilisateur le plus fréquent. Tous les utilisateurs avec plus de 20 sessions d'apprentissage ont un F1 > 0,85 ;
-  les 4 utilisateurs jamais reconnus n'ont que 3 à 7 sessions.
+- **Erreurs** : sur les 15 utilisateurs les plus présents, nous n'avons que 6 erreurs sur 151 sessions, surtout vers
+  **skm**, l'utilisateur le plus fréquent. Tous les utilisateurs avec plus de 20 sessions d'apprentissage ont un
+  F1 > 0,85 ; les 4 utilisateurs jamais reconnus n'ont que 3 à 7 sessions.
 
 ### Soumission
 - 324 prédictions, **223 utilisateurs différents** prédits, navigateur compatible avec l'utilisateur prédit dans
@@ -187,13 +204,13 @@ F1 = 0,948 ± 0,006 en validation croisée et **0,956** en validation, puis rée
 
 ## Conclusion
 
-La façon dont chacun utilise Copilote est une véritable **signature** : son navigateur, les parties du logiciel
-qu'il ouvre, les actions rares qu'il est le seul à utiliser et l'ordre dans lequel il les enchaîne suffisent à
-retrouver l'utilisateur de **95 à 97 % des sessions**. Un modèle linéaire simple, le SVM, suffit dès lors que la
-représentation des sessions est bien construite. Les erreurs restantes touchent les utilisateurs qui ont très peu
-de sessions ou qui travaillent comme un collègue. Pour aller vers la **détection d'intrusion**, la distance d'une
-session à la frontière du SVM pourrait servir de score de confiance, pour signaler une session qui ne ressemble à
-aucun profil connu.
+Nous avons montré que la façon dont chacun utilise Copilote est une véritable **signature** : son navigateur, les
+parties du logiciel qu'il ouvre, les actions rares qu'il est le seul à utiliser et l'ordre dans lequel il les
+enchaîne suffisent à retrouver l'utilisateur de **95 à 97 % des sessions**. En traitant les traces comme des textes
+avec le TF-IDF, un modèle linéaire simple, le SVM, a suffi. Les erreurs restantes touchent les utilisateurs qui ont
+très peu de sessions ou qui travaillent comme un collègue. Pour aller vers la **détection d'intrusion**, nous
+proposons d'utiliser la distance d'une session à la frontière du SVM comme score de confiance, afin de signaler une
+session qui ne ressemble à aucun profil connu.
 
 ---
 
@@ -207,9 +224,8 @@ source .venv/bin/activate        # Windows : .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-1. Télécharger `train.csv`, `test.csv` et `sample_submission.csv` depuis la page Kaggle du challenge et les placer dans `Data/`.
-2. Ouvrir `prepare_data.ipynb` **depuis la racine du dépôt** et exécuter toutes les cellules.
-3. Le fichier `submission.csv` est créé à la racine : il se dépose sur Kaggle et sur Moodle.
+1. Ouvrir `prepare_data.ipynb` **depuis la racine du dépôt** et exécuter toutes les cellules.
+2. Le fichier `submission.csv` est créé à la racine : il se dépose sur Kaggle et sur Moodle.
 
 > Durée d'exécution : environ 45 minutes au total, dont plus de 30 minutes pour la recherche sur grille
 > (section 4.2). Les préparations déjà calculées sont mises en cache dans le dossier `cache/`.
