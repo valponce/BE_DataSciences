@@ -3,4 +3,7 @@ pandas>=2.2
 matplotlib>=3.9
 seaborn>=0.13
 scikit-learn>=1.6
+joblib>=1.4
+ipython>=8.20
+ipykernel>=6.29
 jupyter
