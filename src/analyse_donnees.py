@@ -183,7 +183,7 @@ def apply_filter(val):
             return np.nan
     return val
 
-def extract_pattern_frequencies(df,critere):
+def extract_pattern_frequencies(df,critere,hasUtil=True):
    # Sélection des colonnes d'actions 
     cols_actions = df.columns.difference(["util", "navigateur"])
     
@@ -195,12 +195,16 @@ def extract_pattern_frequencies(df,critere):
     counts_per_row = df_extraites.stack().groupby(level=0).value_counts()
     
     df_filtered = counts_per_row.unstack(fill_value=0)
-    df_grouped = df_filtered.groupby(df["util"]).sum()
+    if hasUtil:
+        df_grouped = df_filtered.groupby(df["util"]).sum()
+    else:
+        df_grouped = df_filtered
+
     freq_critere = df_grouped.div(df_grouped.sum(axis=1), axis=0).fillna(0)
     freq_critere = freq_critere.reset_index()    
     return freq_critere
 
-def actions_analysis(df,actions_list):
+def actions_analysis(df,actions_list,p_select):
     
     cols_actions = df.columns.difference(["util", "navigateur"])
 
@@ -234,7 +238,7 @@ def actions_analysis(df,actions_list):
     freq_actions = df_grouped.div(df_grouped.sum(axis=1), axis=0)
     freq_actions = freq_actions.reset_index()
 
-    selected_actions = _analyze_chi2_and_select(freq_actions,"Les types d'action les plus liés aux utilisateurs (test du χ²)")
+    selected_actions = _analyze_chi2_and_select(freq_actions,p_select,"Les types d'action les plus liés aux utilisateurs (test du χ²)")
     
     corr = freq_actions[selected_actions].corr()
 
@@ -245,7 +249,7 @@ def actions_analysis(df,actions_list):
     return selected_actions
 
 def _analyze_chi2_and_select(
-        freq_df, titre="Les types d'action les plus liés aux utilisateurs (test du χ²)"
+        freq_df, p_select =0.25,titre="Les types d'action les plus liés aux utilisateurs (test du χ²)"
     ):
 
     """Calcule le Chi2, trace le diagramme en barres des 40 meilleurs scores, 
@@ -260,20 +264,32 @@ def _analyze_chi2_and_select(
     
     # Sélection du top 35 pour l'affichage graphique
 
-    plt.figure(figsize=(9, 6.5))
-    plt.barh([freq_df.columns[i] for i in top35[::-1]], scores_chi2[top35[::-1]])
-    plt.title(titre)
-    plt.xlabel("Score du χ²")
-    plt.tight_layout()
-    plt.show()
+    # plt.figure(figsize=(9, 6.5))
+    # plt.barh([freq_df.columns[i] for i in top35[::-1]], scores_chi2[top35[::-1]])
+    # plt.title(titre)
+    # plt.xlabel("Score du χ²")
+    # plt.tight_layout()
+    # plt.show()
   
     # Seuil de sélection (25% du max)
-    seuil = max(scores_chi2) * 0.25
+    seuil = max(scores_chi2) * p_select
     selected_cols = [X.columns[k] for k in range(len(scores_chi2)) if scores_chi2[k] >= seuil]
         
     return selected_cols
 
-def fun(df,critere):
+def get_high_correlations(corr_matrix, seuil=0.8):
+    upper_tri = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
+    
+    pairs = (
+        upper_tri.stack()
+        .reset_index()
+        .rename(columns={'level_0': 'Feature_1', 'level_1': 'Feature_2', 0: 'Correlation'})
+    )
+    
+    return pairs[pairs['Correlation'] > seuil].sort_values(by='Correlation', ascending=False)
+
+
+def configuration_analysis(df,critere,p_select):
     # 1. Initialisation avec la liste unique des utilisateurs pour démarrer les fusions
     freq_critere = df[["util"]].drop_duplicates().reset_index(drop=True)
     
@@ -283,15 +299,34 @@ def fun(df,critere):
 
     freq_critere = freq_critere.fillna(0)
 
-    selected_cols = _analyze_chi2_and_select(freq_critere,"Les types d'écran, fiches ou configurations les plus liés aux utilisateurs (test du χ²)") 
+    selected_cols = _analyze_chi2_and_select(freq_critere, p_select, "Les types d'écran, fiches ou configurations les plus liés aux utilisateurs (test du χ²)") 
    
     corr = freq_critere[selected_cols].corr()
+    
+    high_corr = get_high_correlations(corr,0.7)
+    #fig, ax = plt.subplots(figsize=(20, 20))
+    #heatmap(corr, annot=True, fmt=".2f", cmap="vlag", center=0, ax=ax)
+    #fig.tight_layout()
 
-    fig, ax = plt.subplots(figsize=(20, 20))
-    heatmap(corr, annot=True, fmt=".2f", cmap="vlag", center=0, ax=ax)
-    fig.tight_layout()
+    return selected_cols, high_corr, freq_critere
 
-    return selected_cols
+def configuration_analysis_test(df,critere):
+    
+    # 2. Liste pour stocker les nouveaux morceaux de DataFrames
+    dfs_to_concat = [df[["navigateur"]]]
+    
+    # 3. Pour chaque règle, on extrait les fréquences
+    for regle in critere:
+        freq_df = extract_pattern_frequencies(df, regle, hasUtil=False)
+        dfs_to_concat.append(freq_df)
+        
+    # 4. On assemble toutes les colonnes côte à côte (ligne par ligne)
+    final_df = pd.concat(dfs_to_concat, axis=1)
+    
+    # 5. On remplit les valeurs manquantes éventuelles par 0
+    final_df = final_df.fillna(0)
+
+    return final_df
 
 def temps_par_session(df,updated_df):
    
@@ -307,17 +342,17 @@ def temps_par_session(df,updated_df):
     df["max_t"] = df_t_nums.max(axis=1) 
     
     new_features = df.groupby("util")["max_t"].agg(
-        min_t="min",
-        max_t="max",
-        moyenne_t="mean",
-        std_t="std"
+        #min_t="min",
+        #max_t="max",
+        moyenne_t="mean"
+        #std_t="std"
     ).reset_index()
-
+    
     updated_df = updated_df.merge(new_features, on="util", how="left")
 
     return updated_df
 
-def rapidite_util(df,updated_df):
+def rapidite_util(df,updated_df, hasUtil = True):
     rapidite = []
 
     for index, row in df.iterrows():
@@ -332,8 +367,9 @@ def rapidite_util(df,updated_df):
         rapidite.append((index_firstNaN - nb_interval)/max_t)
 
     df.insert(1, column='rapidite', value=rapidite)
-    
-    df = df.groupby("util")["rapidite"].mean().reset_index()
+
+    if hasUtil:
+        df = df.groupby("util")["rapidite"].mean().reset_index()
     updated_df['rapidite'] = df['rapidite']
     return updated_df
     
