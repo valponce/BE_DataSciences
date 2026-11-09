@@ -270,7 +270,7 @@ python -m venv .venv
 source .venv\Scripts\activate
 pip install -r requirements.txt
 ```
-Le fichier `submission.csv` est créé à la racine : il se dépose sur Kaggle et sur Moodle.
+Le fichier `submission.csv` est créé à la racine : il est déposé maintenant sur Kaggle et sur Moodle.
 
 ---
 
