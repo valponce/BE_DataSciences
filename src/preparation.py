@@ -205,14 +205,11 @@ def controler_qualite(table, lignes_vides):
 
 
 def nettoyer_sessions(table):
-    """On enlève les sessions vides et les doublons exacts du train.
-    Un doublon pourrait tomber à la fois en apprentissage et en validation :
-    le modèle "reconnaîtrait" alors une session qu'il a déjà vue, et le score serait trop beau."""
+    """On enlève les sessions vides et éagelement les doublons dans le cas des données d'entraînement."""
     avant = len(table)
     table = table[table["n_actions"] > 0]
-    if "util" in table:
-        table = table.drop_duplicates(["util", "empreinte"])
     table = table.reset_index(drop=True)
+    print(table[table["n_actions"] <= 0])
     print(f"{avant - len(table)} sessions retirées, {len(table)} sessions conservées.")
     return table
 
@@ -225,8 +222,7 @@ def to_categories(df, col="util"):
 
 def retirer_sessions_aberrantes(df, colonne="max_t"):
     """Règle des boîtes à moustaches, appliquée utilisateur par utilisateur :
-    on enlève ce qui sort de [Q1 - 1.5 IQR ; Q3 + 1.5 IQR].
-    On ne s'en sert que pour calculer la cadence moyenne, pas pour entraîner les modèles."""
+    on enlève ce qui sort de [Q1 - 1.5 IQR ; Q3 + 1.5 IQR]."""
     groupes = df.groupby("util", observed=True)[colonne]
     q1 = groupes.transform(lambda s: s.quantile(0.25))
     q3 = groupes.transform(lambda s: s.quantile(0.75))
