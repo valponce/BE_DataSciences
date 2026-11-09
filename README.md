@@ -10,7 +10,7 @@
 École Centrale de Lyon . Année 2026/2027 . Groupe TD 4
 
 <br/>
-
+<!-- à partir du Shields.io c un service gratuit et c joli -->
 ![Python](https://img.shields.io/badge/Python-3.14-C8102E?style=flat-square&logo=python&logoColor=white&labelColor=1D1D1B)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-C8102E?style=flat-square&logo=scikitlearn&logoColor=white&labelColor=1D1D1B)
 ![pandas](https://img.shields.io/badge/pandas-données-C8102E?style=flat-square&logo=pandas&logoColor=white&labelColor=1D1D1B)
