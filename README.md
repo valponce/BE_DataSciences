@@ -93,7 +93,7 @@ Nous avons réparti le code en un fichier par étape. Le notebook n'a qu'un seul
 ## Démarche
 
 <div align="center">
-<img src="sera aussi sur src " alt="Schéma de la démarche" width="900"/>
+<img src="src/Images/DiagrammeDeNotreDémarche.png" alt="Schéma de la démarche" width="900"/>
 </div>
 
 ### 1. Préparation et nettoyage
