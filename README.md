@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="je vais lajouter sur SRC" alt="École Centrale de Lyon" width="340"/>
+<img src="src/Images/LogoECLnoir.png" alt="École Centrale de Lyon" width="340"/>
 
 # Qui utilise mon appli ?
 ### Identification des utilisateurs du logiciel Copilote à partir de leurs traces d'utilisation
