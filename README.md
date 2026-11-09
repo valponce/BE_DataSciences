@@ -267,15 +267,10 @@ Voici les pages que nous avons consultées:
 git clone https://github.com/valponce/BE_DataSciences.git
 cd BE_DataSciences
 python -m venv .venv
-source .venv/bin/activate        # Windows : .venv\Scripts\activate
+source .venv\Scripts\activate
 pip install -r requirements.txt
 ```
-
-1. Ouvrir `prepare_data.ipynb` **depuis la racine du dépôt** et exécuter toutes les cellules.
-2. Le fichier `submission.csv` est créé à la racine : il se dépose sur Kaggle et sur Moodle.
-
-> Durée d'exécution : environ 45 minutes au total, dont plus de 30 minutes pour la recherche sur grille
-> (section 4.2). Les préparations déjà calculées sont mises en cache dans le dossier `cache/`.
+Le fichier `submission.csv` est créé à la racine : il se dépose sur Kaggle et sur Moodle.
 
 ---
 
